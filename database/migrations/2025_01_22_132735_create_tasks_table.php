@@ -10,16 +10,21 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('todos', function (Blueprint $table) {
+        Schema::create('tasks', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('project_id')->nullable()->constrained()->onDelete('cascade');
-            $table->text('task');
+            $table->foreignId('workspace_id')->constrained()->onDelete('cascade');
+            $table->string('title');
+            $table->string('slug');
+            $table->text('description')->nullable();
             $table->enum('status', ['pending', 'in_progress', 'completed'])->default('pending');
             $table->enum('priority', ['very_low', 'low', 'medium', 'high', 'very_high'])->default('medium');
             $table->dateTime('due_date')->nullable();
+            $table->dateTime('completed_at')->nullable();
             $table->softDeletes();
             $table->timestamps();
+
+            $table->unique(['workspace_id', 'slug']);
         });
     }
 
@@ -28,6 +33,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('todos');
+        Schema::dropIfExists('tasks');
     }
 };
